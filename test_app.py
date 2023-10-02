@@ -1,8 +1,6 @@
 import unittest
 import base64
 import os
-# Assuming import test_app is necessary
-import test_app
 from main import app, db, File
 
 class FlaskTestCase(unittest.TestCase):
@@ -21,11 +19,11 @@ class FlaskTestCase(unittest.TestCase):
 
     def test_authorization(self):
         response = self.client.get('/')
-        self.assertEqual(response.status_code, 401)  # Expect unauthorized
+        self.assertEqual(response.status_code, 401)
 
         headers = {"Authorization": "Basic " + base64.b64encode("admin:password".encode()).decode()}
         response = self.client.get('/', headers=headers)
-        self.assertEqual(response.status_code, 200)  # Expect success
+        self.assertEqual(response.status_code, 200)
 
     def test_upload_file(self):
         headers = {"Authorization": "Basic " + base64.b64encode("admin:password".encode()).decode()}
@@ -35,22 +33,20 @@ class FlaskTestCase(unittest.TestCase):
                 'file': (f, 'some_test_file.csv')
             }
             response = self.client.post('/upload', headers=headers, content_type='multipart/form-data', data=data)
-            self.assertEqual(response.status_code, 200)  # Expect success
-            # Optionally, cleanup the uploaded file if it gets saved on disk.
+            self.assertEqual(response.status_code, 200)
             if response.status_code == 200 and os.path.exists('path_to_uploaded_files/some_test_file.csv'):
                 os.remove('path_to_uploaded_files/some_test_file.csv')
 
     def test_delete_file(self):
         headers = {"Authorization": "Basic " + base64.b64encode("admin:password".encode()).decode()}
 
-        # Better approach would be to create a file here and delete that file, ensuring the file existence.
-        file = File(filename="some_test_file.csv")  # Assuming File is the model representing the file.
+        file = File(filename="some_test_file.csv")
         with app.app_context():
             db.session.add(file)
             db.session.commit()
 
         response = self.client.delete(f'/file/{file.id}', headers=headers)
-        self.assertEqual(response.status_code, 200)  # Expect success
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':
