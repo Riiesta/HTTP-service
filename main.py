@@ -37,7 +37,7 @@ def upload_file():
             uploaded_file.save(filepath)
 
             delimiter = detect_delimiter(filepath)
-            encoding = detect_encoding(filepath)  # Используйте функцию detect_encoding
+            encoding = detect_encoding(filepath)
             data = pd.read_csv(filepath, delimiter=delimiter, encoding=encoding)  # Используйте переменную encoding
 
             columns = ",".join(data.columns.tolist())
@@ -52,16 +52,14 @@ def upload_file():
 @app.route('/file/<int:file_id>', methods=['DELETE'])
 @auth.login_required
 def delete_file(file_id):
-    file = File.query.get_or_404(file_id)  # Получаем файл по id, или возвращаем 404 ошибку если файл не найден
+    file = File.query.get_or_404(file_id)
 
-    # Удаление файла с диска
     filepath = os.path.join('uploads', file.filename)
     if os.path.exists(filepath):
         os.remove(filepath)
     else:
         return jsonify({'error': 'File not found on disk'}), 404
 
-    # Удаление записи о файле из базы данных
     db.session.delete(file)
     db.session.commit()
 
