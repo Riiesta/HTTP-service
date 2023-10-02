@@ -21,6 +21,7 @@ def verify_password(username, password):
     return username == 'admin' and password == 'password'
 
 @app.route('/', methods=['GET'])
+@auth.login_required
 def home():
     return render_template('index.html')
 
@@ -47,6 +48,25 @@ def upload_file():
         else:
             return jsonify({'error': 'No file uploaded'}), 400
     return render_template('upload.html')
+
+@app.route('/file/<int:file_id>', methods=['DELETE'])
+@auth.login_required
+def delete_file(file_id):
+    file = File.query.get_or_404(file_id)  # Получаем файл по id, или возвращаем 404 ошибку если файл не найден
+
+    # Удаление файла с диска
+    filepath = os.path.join('uploads', file.filename)
+    if os.path.exists(filepath):
+        os.remove(filepath)
+    else:
+        return jsonify({'error': 'File not found on disk'}), 404
+
+    # Удаление записи о файле из базы данных
+    db.session.delete(file)
+    db.session.commit()
+
+    return jsonify({'message': 'File deleted successfully'}), 200
+
 
 @app.route('/files', methods=['GET'])
 @auth.login_required

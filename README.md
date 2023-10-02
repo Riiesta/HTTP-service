@@ -1,4 +1,5 @@
 # tasktest3
+add functional
 В этом коде:
 
 Создается Flask-приложение и SQLAlchemy-конфигурация для работы с SQLite.

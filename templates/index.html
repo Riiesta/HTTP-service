@@ -16,11 +16,28 @@
       <ul>
         <li><a href="/upload" class="btn btn-primary">Upload CSV File</a></li>
         <li><a href="/files" class="btn btn-secondary mt-2">List Files</a></li>
+        <li><button id="deleteButton" class="btn btn-danger mt-2">Delete File</button></li>
       </ul>
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      document.getElementById('deleteButton').addEventListener('click', function() {
+        const fileId = prompt('Enter the ID of the file you want to delete');
+
+        if (fileId) {
+          fetch(`/file/${fileId}`, {
+            method: 'DELETE',
+          })
+          .then(response => response.json())
+          .then(data => alert(data.message))
+          .catch((error) => console.error('Error:', error));
+        }
+      });
+    </script>
   </body>
 </html>
+
